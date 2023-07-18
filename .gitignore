@@ -1,0 +1,31 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/
+venv/
+env/
+dist/
+build/
+*.egg-info/
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# Compiled files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Temporary files
+*~
+*.swp
+
+# Logs
+*.log
+
+# Configuration files with sensitive data
+config.ini
+secrets.yml
+.env
