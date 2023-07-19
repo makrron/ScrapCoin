@@ -25,6 +25,10 @@ build/
 # Logs
 *.log
 
+# DB files
+*.sqlite3
+*.db
+
 # Configuration files with sensitive data
 config.ini
 secrets.yml
