@@ -16,7 +16,7 @@ ScrapCoin Pro is a Rest API developed in Python that allows querying Bitcoin fia
 1. Clone the GitHub repository:
 
 ```bash
-git clone https://github.com/tu_usuario/scrapcoin-pro.git
+git clone https://github.com/makrron/ScrapCoin.git
 ```
 2. Create and activate a virtual environment (Python 3.x is recommended):
 ```bash
@@ -30,7 +30,7 @@ pip install -r requirements.txt
 4. Configure the API in the ``config.py`` file.
 5. Run the application:
 ```bash
-python app.py
+python main.py
 ```
 
 ## Usage
@@ -67,7 +67,7 @@ ScrapCoin Pro es una API Rest desarrollada en Python que permite consultar los p
 1. Clona el repositorio de GitHub:
 
 ```bash
-git clone https://github.com/tu_usuario/scrapcoin-pro.git
+git clone https://github.com/makrron/ScrapCoin.git
 ```
 
 1. Crea y activa un entorno virtual (se recomienda utilizar Python 3.x):
@@ -85,7 +85,7 @@ pip install -r requirements.txt
 
 2. Ejecuta la aplicacion:
 ```bash
-python app.py
+python main.py
 ```
 
 ## Uso
