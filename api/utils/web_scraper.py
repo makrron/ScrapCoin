@@ -260,18 +260,28 @@ def blockchaincom(trade_pair: BlockchaincomTradePair):
         print(e)
 
 
+def main():
+    """
+    Main function to scrap all exchanges
+    """
+    while True:
+        blockchaincom(BlockchaincomTradePair.BTC_EUR)
+        blockchaincom(BlockchaincomTradePair.BTC_USD)
+        blockchaincom(BlockchaincomTradePair.BTC_CAD)
+        blockchaincom(BlockchaincomTradePair.BTC_GBP)
+        blockchaincom(BlockchaincomTradePair.BTC_RUB)
+        blockchaincom(BlockchaincomTradePair.BTC_CNY)
+        blockchaincom(BlockchaincomTradePair.BTC_INR)
+        blockchaincom(BlockchaincomTradePair.BTC_BRL)
+        blockchaincom(BlockchaincomTradePair.BTC_TRY)
+
+        coin_base_pro(CoinBaseProTradePair.BTC_USD)
+        coin_base_pro(CoinBaseProTradePair.BTC_EUR)
+        coin_base_pro(CoinBaseProTradePair.BTC_USDT)
+        yadio()
+
+        time.sleep(300)
+
+
 if __name__ == "__main__":
-    blockchaincom(BlockchaincomTradePair.BTC_EUR)
-    blockchaincom(BlockchaincomTradePair.BTC_USD)
-    blockchaincom(BlockchaincomTradePair.BTC_CAD)
-    blockchaincom(BlockchaincomTradePair.BTC_GBP)
-    blockchaincom(BlockchaincomTradePair.BTC_RUB)
-    blockchaincom(BlockchaincomTradePair.BTC_CNY)
-    blockchaincom(BlockchaincomTradePair.BTC_INR)
-    blockchaincom(BlockchaincomTradePair.BTC_BRL)
-    blockchaincom(BlockchaincomTradePair.BTC_TRY)
-    
-    coin_base_pro(CoinBaseProTradePair.BTC_USD)
-    coin_base_pro(CoinBaseProTradePair.BTC_EUR)
-    coin_base_pro(CoinBaseProTradePair.BTC_USDT)
-    yadio()
+    main()
