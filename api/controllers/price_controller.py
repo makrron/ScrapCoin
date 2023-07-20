@@ -6,7 +6,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
-app.config['RATELIMIT_HEADERS_ENABLED'] = True # To allow the header to be sent
+app.config['RATELIMIT_HEADERS_ENABLED'] = True  # To allow the header to be sent
 limiter = Limiter(
     get_remote_address,
     app=app,
@@ -17,15 +17,49 @@ limiter = Limiter(
 
 def get_db_connection():
     """Connect to the database."""
-    conn = sqlite3.connect('api/controllers/database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        conn = sqlite3.connect('api/controllers/database.db')
+        conn.row_factory = sqlite3.Row
+        return conn
+    except Exception as e:
+        print(e)
+        return None
 
 
 @app.route('/', methods=['GET'])
 @limiter.exempt
 def home():
     return jsonify({'message': 'Welcome to the ScrapCoin API!'})
+
+
+@app.route('/prices', methods=['GET'])
+@limiter.limit('10 per minute')
+def get_price_list():
+    """
+    Allows you to send a list of trading pairs as query parameters to obtain the prices of several pairs in
+    a single call, e.g. GET /prices?pairs=BTC_USD,BTC_EUR,ETH_USD
+    :return: JSON object with the current prices of the given trading pairs.
+    """
+    conn = get_db_connection()
+    if request.method == 'GET':
+        try:
+            pairs = request.args.get('pairs').split(',')
+            pairs = [pair.upper() for pair in pairs]
+            pairs = tuple(pairs)
+        except Exception as e:
+            return jsonify({'ERROR': 'Invalid pairs.'}), 400
+
+        try:
+            cur = conn.execute(f"SELECT * FROM BITCOIN WHERE PAIR IN {pairs}").fetchall()
+
+            rows = [dict(row) for row in cur]
+
+            if len(rows) == 0:
+                return jsonify({'ERROR': 'Invalid pairs.'}), 400
+            else:
+                return jsonify(rows), 200
+        except Exception as e:
+            return jsonify({'ERROR': 'Invalid pairs.'}), 400
 
 
 @app.route('/prices/<pair>', methods=['GET'])
@@ -41,38 +75,18 @@ def get_price(pair):
     """
     conn = get_db_connection()
     if request.method == 'GET':
-        cur = conn.execute(f"SELECT * FROM BITCOIN WHERE PAIR LIKE '{pair.upper()}'").fetchall()
+        try:
+            cur = conn.execute(f"SELECT * FROM BITCOIN WHERE PAIR LIKE '{pair.upper()}'").fetchall()
 
-        rows = [dict(row) for row in cur]
+            rows = [dict(row) for row in cur]
 
-        if len(rows) == 0:
+            if len(rows) == 0:
+                return jsonify({'ERROR': 'Invalid pair.'}), 400
+            else:
+                return jsonify(rows), 200
+        except Exception as e:
+            print(e)
             return jsonify({'ERROR': 'Invalid pair.'}), 400
-        else:
-            return jsonify(rows), 200
-
-
-@app.route('/prices', methods=['GET'])
-@limiter.limit('10 per minute')
-def get_price_list():
-    """
-    Allows you to send a list of trading pairs as query parameters to obtain the prices of several pairs in
-    a single call, e.g. GET /prices?pairs=BTC_USD,BTC_EUR,ETH_USD
-    :return: JSON object with the current prices of the given trading pairs.
-    """
-    conn = get_db_connection()
-    if request.method == 'GET':
-        pairs = request.args.get('pairs').split(',')
-        pairs = [pair.upper() for pair in pairs]
-        pairs = tuple(pairs)
-        print(pairs)
-        cur = conn.execute(f"SELECT * FROM BITCOIN WHERE PAIR IN {pairs}").fetchall()
-
-        rows = [dict(row) for row in cur]
-
-        if len(rows) == 0:
-            return jsonify({'ERROR': 'Invalid pairs.'}), 400
-        else:
-            return jsonify(rows), 200
 
 
 @app.route('/exchanges/<exchange_name>/prices', methods=['GET'])
@@ -86,14 +100,18 @@ def get_exchange_price_list(exchange_name):
     """
     conn = get_db_connection()
     if request.method == 'GET':
-        cur = conn.execute(f"SELECT * FROM BITCOIN WHERE EXCHANGE LIKE '{exchange_name.upper()}'").fetchall()
+        try:
+            cur = conn.execute(f"SELECT * FROM BITCOIN WHERE EXCHANGE LIKE '{exchange_name.upper()}'").fetchall()
 
-        rows = [dict(row) for row in cur]
+            rows = [dict(row) for row in cur]
 
-        if len(rows) == 0:
+            if len(rows) == 0:
+                return jsonify({'ERROR': 'Invalid exchange.'}), 400
+            else:
+                return jsonify(rows), 200
+        except Exception as e:
+            print(e)
             return jsonify({'ERROR': 'Invalid exchange.'}), 400
-        else:
-            return jsonify(rows), 200
 
 
 @app.route('/exchanges', methods=['GET'])
@@ -106,14 +124,18 @@ def get_exchange_list():
 
     conn = get_db_connection()
     if request.method == 'GET':
-        cur = conn.execute(f"SELECT DISTINCT EXCHANGE FROM BITCOIN").fetchall()
+        try:
+            cur = conn.execute(f"SELECT DISTINCT EXCHANGE FROM BITCOIN").fetchall()
 
-        rows = [dict(row) for row in cur]
+            rows = [dict(row) for row in cur]
 
-        if len(rows) == 0:
+            if len(rows) == 0:
+                return jsonify({'ERROR': 'Invalid exchange.'}), 400
+            else:
+                return jsonify(rows), 200
+        except Exception as e:
+            print(e)
             return jsonify({'ERROR': 'Invalid exchange.'}), 400
-        else:
-            return jsonify(rows), 200
 
 
 @app.route('/exchanges/<exchange_name>/pairs', methods=['GET'])
@@ -128,15 +150,19 @@ def get_exchange_pair_list(exchange_name):
 
     conn = get_db_connection()
     if request.method == 'GET':
-        cur = conn.execute(
-            f"SELECT DISTINCT PAIR FROM BITCOIN WHERE EXCHANGE LIKE '{exchange_name.upper()}'").fetchall()
+        try:
+            cur = conn.execute(
+                f"SELECT DISTINCT PAIR FROM BITCOIN WHERE EXCHANGE LIKE '{exchange_name.upper()}'").fetchall()
 
-        rows = [dict(row) for row in cur]
+            rows = [dict(row) for row in cur]
 
-        if len(rows) == 0:
+            if len(rows) == 0:
+                return jsonify({'ERROR': 'Invalid exchange.'}), 400
+            else:
+                return jsonify(rows), 200
+        except Exception as e:
+            print(e)
             return jsonify({'ERROR': 'Invalid exchange.'}), 400
-        else:
-            return jsonify(rows), 200
 
 
 @app.route('/exchanges/<exchange_name>/pairs/<pair>', methods=['GET'])
@@ -152,12 +178,16 @@ def get_exchange_pair_price(exchange_name, pair):
 
     conn = get_db_connection()
     if request.method == 'GET':
-        cur = conn.execute(
-            f"SELECT * FROM BITCOIN WHERE EXCHANGE LIKE '{exchange_name.upper()}' AND PAIR LIKE '{pair.upper()}'").fetchall()
+        try:
+            cur = conn.execute(
+                f"SELECT * FROM BITCOIN WHERE EXCHANGE LIKE '{exchange_name.upper()}' AND PAIR LIKE '{pair.upper()}'").fetchall()
 
-        rows = [dict(row) for row in cur]
+            rows = [dict(row) for row in cur]
 
-        if len(rows) == 0:
+            if len(rows) == 0:
+                return jsonify({'ERROR': 'Invalid exchange or pair.'}), 400
+            else:
+                return jsonify(rows), 200
+        except Exception as e:
+            print(e)
             return jsonify({'ERROR': 'Invalid exchange or pair.'}), 400
-        else:
-            return jsonify(rows), 200
