@@ -3,9 +3,12 @@ import enum
 import re
 import sqlite3
 import time
-
+from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
 
 from api.models.price import Price
 
@@ -36,6 +39,7 @@ class Exchange(enum.Enum):
     """
     Enum class for exchanges.
     """
+    BLOCKCHAINCOM = "Blockchain.com"
     COIN_BASE_PRO = "CoinBasePro"
     YADIO = "Yadio"
 
@@ -121,6 +125,21 @@ class YadioTradePair(enum.Enum):
     BTC_PYG = "BTC_PYG"
 
 
+class BlockchaincomTradePair(enum.Enum):
+    """
+    Enum class for blockchain.com available trade pairs.
+    """
+    BTC_USD = "BTC_USD"
+    BTC_EUR = "BTC_EUR"
+    BTC_CAD = "BTC_CAD"
+    BTC_GBP = "BTC_GBP"
+    BTC_RUB = "BTC_RUB"
+    BTC_CNY = "BTC_CNY"
+    BTC_INR = "BTC_INR"
+    BTC_BRL = "BTC_BRL"
+    BTC_TRY = "BTC_TRY"
+
+
 def coin_base_pro(trade_pair: CoinBaseProTradePair):
     """Returns the current price of a given trade pair on Coinbase Pro.
     :param trade_pair: The trade pair to be searched.
@@ -202,7 +221,56 @@ def yadio():
         driver.quit()
 
 
+def blockchaincom(trade_pair: BlockchaincomTradePair):
+    """
+    Scrap blockchain.com to get all bitcoin price in all fiat currencies available
+    :param trade_pair: The trade pair to be searched.
+    :type trade_pair: BlockchaincomTradePair
+    """
+
+    url = "https://www.blockchain.com/es/explorer/prices"
+    options = webdriver.FirefoxOptions()
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    driver = webdriver.Firefox(options=options)
+    tp = re.search(r"BTC_(\w+)", trade_pair.value).group(1)
+
+    try:
+        driver.get(url)
+
+        wait = WebDriverWait(driver, 10)
+        select_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "sc-7b19e8be-0.eQEwmk")))
+
+        select = Select(select_element)
+        select.select_by_value(f'{tp}')
+
+        time.sleep(1)
+        html = driver.page_source
+        soup = BeautifulSoup(html, 'html.parser')
+        price = soup.find_all("div", class_="sc-89fc2ff1-0 iQXnyB")
+        price = price[0].text
+
+        pattern = r"[^\d.,]*(\d+[.,]\d+)"
+        price = re.sub(pattern, r"\1", price)
+
+        save_price(Price(price=price, pair=trade_pair.value, exchange=Exchange.BLOCKCHAINCOM.value,
+                         timestamp=time.time()))
+        driver.quit()
+    except Exception as e:
+        print(e)
+
+
 if __name__ == "__main__":
+    blockchaincom(BlockchaincomTradePair.BTC_EUR)
+    blockchaincom(BlockchaincomTradePair.BTC_USD)
+    blockchaincom(BlockchaincomTradePair.BTC_CAD)
+    blockchaincom(BlockchaincomTradePair.BTC_GBP)
+    blockchaincom(BlockchaincomTradePair.BTC_RUB)
+    blockchaincom(BlockchaincomTradePair.BTC_CNY)
+    blockchaincom(BlockchaincomTradePair.BTC_INR)
+    blockchaincom(BlockchaincomTradePair.BTC_BRL)
+    blockchaincom(BlockchaincomTradePair.BTC_TRY)
+    
     coin_base_pro(CoinBaseProTradePair.BTC_USD)
     coin_base_pro(CoinBaseProTradePair.BTC_EUR)
     coin_base_pro(CoinBaseProTradePair.BTC_USDT)
