@@ -5,7 +5,7 @@
 class Price:
     """Class representing the Bitcoin Price model in fiat."""
 
-    def __init__(self, price: float, pair: str, exchange: str, timestamp):
+    def __init__(self, price, pair: str, exchange: str, timestamp):
         self.price = price
         self.pair = pair
         self.exchange = exchange

@@ -22,7 +22,7 @@ def home():
 def get_price(pair):
     """
     Returns the current price of a specific trading pair,
-    e.g. GET /prices/BTC-USD to get the current price of Bitcoin in US dollars.
+    e.g. GET /prices/BTC_USD to get the current price of Bitcoin in US dollars.
     :param pair: The trading pair to be searched.
     :type pair: str
     :return: JSON object with the current price of the given trading pair.
@@ -44,7 +44,7 @@ def get_price(pair):
 def get_price_list():
     """
     Allows you to send a list of trading pairs as query parameters to obtain the prices of several pairs in
-    a single call, e.g. GET /prices?pairs=BTC-USD,BTC-EUR,ETH-USD
+    a single call, e.g. GET /prices?pairs=BTC_USD,BTC_EUR,ETH_USD
     :return: JSON object with the current prices of the given trading pairs.
     """
     conn = get_db_connection()
