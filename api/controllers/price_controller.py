@@ -2,8 +2,17 @@
 import sqlite3
 
 from flask import Flask, jsonify, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
+app.config['RATELIMIT_HEADERS_ENABLED'] = True # To allow the header to be sent
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["100 per day", "50 per hour"],
+    storage_uri="memory://",
+)
 
 
 def get_db_connection():
@@ -14,11 +23,13 @@ def get_db_connection():
 
 
 @app.route('/', methods=['GET'])
+@limiter.exempt
 def home():
     return jsonify({'message': 'Welcome to the ScrapCoin API!'})
 
 
 @app.route('/prices/<pair>', methods=['GET'])
+@limiter.limit('10 per minute')
 def get_price(pair):
     """
     Returns the current price of a specific trading pair,
@@ -41,6 +52,7 @@ def get_price(pair):
 
 
 @app.route('/prices', methods=['GET'])
+@limiter.limit('10 per minute')
 def get_price_list():
     """
     Allows you to send a list of trading pairs as query parameters to obtain the prices of several pairs in
@@ -64,6 +76,7 @@ def get_price_list():
 
 
 @app.route('/exchanges/<exchange_name>/prices', methods=['GET'])
+@limiter.limit('10 per minute')
 def get_exchange_price_list(exchange_name):
     """
     Returns the prices of all trading pairs available on a specific exchange,
@@ -84,6 +97,7 @@ def get_exchange_price_list(exchange_name):
 
 
 @app.route('/exchanges', methods=['GET'])
+@limiter.limit('10 per minute')
 def get_exchange_list():
     """
     Returns the list of exchanges available.
@@ -103,6 +117,7 @@ def get_exchange_list():
 
 
 @app.route('/exchanges/<exchange_name>/pairs', methods=['GET'])
+@limiter.limit('10 per minute')
 def get_exchange_pair_list(exchange_name):
     """
     Returns the list of trading pairs available on a specific exchange,
@@ -125,6 +140,7 @@ def get_exchange_pair_list(exchange_name):
 
 
 @app.route('/exchanges/<exchange_name>/pairs/<pair>', methods=['GET'])
+@limiter.limit('10 per minute')
 def get_exchange_pair_price(exchange_name, pair):
     """
     Returns the price of a specific trading pair on a specific exchange,
