@@ -33,3 +33,5 @@ build/
 config.ini
 secrets.yml
 .env
+*.db-journal
+
