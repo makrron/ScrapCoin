@@ -164,8 +164,8 @@ def coin_base_pro(trade_pair: CoinBaseProTradePair):
         time.sleep(5)  # Wait until the page is fully loaded
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
-        price = soup.find("div", {"class": "Flex-sc-ap3nvf Wrapper-sc-1hfcjcf xPniB"}).find("span", {
-            "class": "Text-sc-qybbog StyledNumber-sc-8mik7o jPvMed"}).text
+        price = soup.find("div", {"class": "Flex-sc-1x8cw8c-0 MarketInfo__Section-sc-1acyfpz-3 irrwlQ"}).find("span", {
+            "class": "Text-sc-142sraw-0 LocalizedNumber__StyledNumber-sc-1w0xnso-0 dngeTO"}).text
         pattern = r"[^\d,.]+"  # remove non-numeric characters
         price = re.sub(pattern, "", price)  # add . to the last two digits
         # price = float(price.replace(",", ""))  # remove comma and convert to float
@@ -282,7 +282,10 @@ class BinanceTradePair(enum.Enum):
 def binance(trade_pair: BinanceTradePair):
     """
     Scrap binance.com to get all bitcoin price in all fiat currencies available
+    :param trade_pair: The trade pair to be searched.
+    :type trade_pair: BinanceTradePair
     """
+
     url = f"https://www.binance.com/es/trade/{trade_pair.value}"
     options = webdriver.FirefoxOptions()
     options.add_argument('--headless')
