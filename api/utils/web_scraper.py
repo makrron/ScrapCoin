@@ -3,10 +3,11 @@ import enum
 import re
 import sqlite3
 import time
-from selenium.webdriver.support import expected_conditions as EC
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -39,6 +40,7 @@ class Exchange(enum.Enum):
     """
     Enum class for exchanges.
     """
+    Binance = "Binance"
     BLOCKCHAINCOM = "Blockchain.com"
     COIN_BASE_PRO = "CoinBasePro"
     YADIO = "Yadio"
@@ -51,6 +53,7 @@ class CoinBaseProTradePair(enum.Enum):
     BTC_USD = "BTC-USD"
     BTC_EUR = "BTC-EUR"
     BTC_USDT = "BTC-USDT"
+    BTC_GBP = "BTC-GBP"
 
 
 class YadioTradePair(enum.Enum):
@@ -166,13 +169,14 @@ def coin_base_pro(trade_pair: CoinBaseProTradePair):
         pattern = r"[^\d,.]+"  # remove non-numeric characters
         price = re.sub(pattern, "", price)  # add . to the last two digits
         # price = float(price.replace(",", ""))  # remove comma and convert to float
-        driver.quit()
         # save price to database
         save_price(Price(price=price, pair=tp, exchange=Exchange.COIN_BASE_PRO.value,
                          timestamp=time.time()))
 
     except Exception as e:
         print(e)
+    finally:
+        driver.quit()
 
 
 def yadio():
@@ -255,15 +259,55 @@ def blockchaincom(trade_pair: BlockchaincomTradePair):
 
         save_price(Price(price=price, pair=trade_pair.value, exchange=Exchange.BLOCKCHAINCOM.value,
                          timestamp=time.time()))
-        driver.quit()
     except Exception as e:
         print(e)
+    finally:
+        driver.quit()
+
+
+class BinanceTradePair(enum.Enum):
+    BTC_EUR = "BTC_EUR"
+    BTC_RUB = "BTC_RUB"
+    BTC_NGN = "BTC_NGN"
+    BTC_GBP = "BTC_GBP"
+    BTC_ZAR = "BTC_ZAR"
+    BTC_UAH = "BTC_UAH"
+    BTC_BRL = "BTC_BRL"
+    BTC_TRY = "BTC_TRY"
+    BTC_PLN = "BTC_PLN"
+    BTC_ARS = "BTC_ARS"
+    BTC_RON = "BTC_RON"
+
+
+def binance(trade_pair: BinanceTradePair):
+    """
+    Scrap binance.com to get all bitcoin price in all fiat currencies available
+    """
+    url = f"https://www.binance.com/es/trade/{trade_pair.value}"
+    options = webdriver.FirefoxOptions()
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    driver = webdriver.Firefox(options=options)
+
+    try:
+        driver.get(url)
+        html = driver.page_source
+        soup = BeautifulSoup(html, 'html.parser')
+        price = soup.find("div", {"class": "showPrice"}).text
+        save_price(Price(price=price, pair=trade_pair.value, exchange=Exchange.Binance.value,
+                         timestamp=time.time()))
+
+    except Exception as e:
+        print(e)
+    finally:
+        driver.quit()
 
 
 def main():
     """
     Main function to scrap all exchanges
     """
+
     while True:
         blockchaincom(BlockchaincomTradePair.BTC_EUR)
         blockchaincom(BlockchaincomTradePair.BTC_USD)
@@ -278,7 +322,12 @@ def main():
         coin_base_pro(CoinBaseProTradePair.BTC_USD)
         coin_base_pro(CoinBaseProTradePair.BTC_EUR)
         coin_base_pro(CoinBaseProTradePair.BTC_USDT)
+        coin_base_pro(CoinBaseProTradePair.BTC_GBP)
+
         yadio()
+
+        for trade_pair in BinanceTradePair:
+            binance(trade_pair)
 
         time.sleep(300)
 

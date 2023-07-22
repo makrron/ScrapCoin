@@ -47,6 +47,7 @@ def get_price_list():
             pairs = [pair.upper() for pair in pairs]
             pairs = tuple(pairs)
         except Exception as e:
+            print(e)
             return jsonify({'ERROR': 'Invalid pairs.'}), 400
 
         try:
@@ -59,6 +60,7 @@ def get_price_list():
             else:
                 return jsonify(rows), 200
         except Exception as e:
+            print(e)
             return jsonify({'ERROR': 'Invalid pairs.'}), 400
 
 
@@ -180,7 +182,8 @@ def get_exchange_pair_price(exchange_name, pair):
     if request.method == 'GET':
         try:
             cur = conn.execute(
-                f"SELECT * FROM BITCOIN WHERE EXCHANGE LIKE '{exchange_name.upper()}' AND PAIR LIKE '{pair.upper()}'").fetchall()
+                f"SELECT * FROM BITCOIN WHERE EXCHANGE LIKE '{exchange_name.upper()}' "
+                f"AND PAIR LIKE '{pair.upper()}'").fetchall()
 
             rows = [dict(row) for row in cur]
 
