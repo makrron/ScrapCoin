@@ -3,11 +3,12 @@ import enum
 import re
 import sqlite3
 import time
+from selenium_stealth import stealth
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -40,6 +41,7 @@ class Exchange(enum.Enum):
     """
     Enum class for exchanges.
     """
+    CoinGecko = "CoinGecko"
     Binance = "Binance"
     BLOCKCHAINCOM = "Blockchain.com"
     COIN_BASE_PRO = "CoinBasePro"
@@ -243,7 +245,7 @@ def blockchaincom(trade_pair: BlockchaincomTradePair):
         driver.get(url)
 
         wait = WebDriverWait(driver, 10)
-        select_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "sc-7b19e8be-0.eQEwmk")))
+        select_element = wait.until(ec.presence_of_element_located((By.CLASS_NAME, "sc-7b19e8be-0.eQEwmk")))
 
         select = Select(select_element)
         select.select_by_value(f'{tp}')
@@ -306,12 +308,118 @@ def binance(trade_pair: BinanceTradePair):
         driver.quit()
 
 
+class CoinGeckoTradePair(enum.Enum):
+    BTC_USD = "BTC_USD"
+    BTC_IDR = "BTC_IDR"
+    BTC_TWD = "BTC_TWD"
+    BTC_EUR = "BTC_EUR"
+    BTC_KRW = "BTC_KRW"
+    BTC_JPY = "BTC_JPY"
+    BTC_RUB = "BTC_RUB"
+    BTC_CNY = "BTC_CNY"
+    BTC_AED = "BTC_AED"
+    BTC_ARS = "BTC_ARS"
+    BTC_AUD = "BTC_AUD"
+    BTC_BDT = "BTC_BDT"
+    BTC_BHD = "BTC_BHD"
+    BTC_BMD = "BTC_BMD"
+    BTC_BRL = "BTC_BRL"
+    BTC_CAD = "BTC_CAD"
+    BTC_CHF = "BTC_CHF"
+    BTC_CLP = "BTC_CLP"
+    BTC_CZK = "BTC_CZK"
+    BTC_DKK = "BTC_DKK"
+    BTC_GBP = "BTC_GBP"
+    BTC_HKD = "BTC_HKD"
+    BTC_HUF = "BTC_HUF"
+    BTC_ILS = "BTC_ILS"
+    BTC_INR = "BTC_INR"
+    BTC_KWD = "BTC_KWD"
+    BTC_LKR = "BTC_LKR"
+    BTC_MMK = "BTC_MMK"
+    BTC_MXN = "BTC_MXN"
+    BTC_MYR = "BTC_MYR"
+    BTC_NGN = "BTC_NGN"
+    BTC_NOK = "BTC_NOK"
+    BTC_NZD = "BTC_NZD"
+    BTC_PHP = "BTC_PHP"
+    BTC_PKR = "BTC_PKR"
+    BTC_PLN = "BTC_PLN"
+    BTC_SAR = "BTC_SAR"
+    BTC_SEK = "BTC_SEK"
+    BTC_SGD = "BTC_SGD"
+    BTC_THB = "BTC_THB"
+    BTC_TRY = "BTC_TRY"
+    BTC_UAH = "BTC_UAH"
+    BTC_VEF = "BTC_VEF"
+    BTC_VND = "BTC_VND"
+    BTC_ZAR = "BTC_ZAR"
+    BTC_XDR = "BTC_XDR"
+
+
+def coingecko():
+    """
+    Scrap coingecko.com to get all bitcoin price in all fiat currencies available
+    """
+    url = "https://www.coingecko.com/en/coins/bitcoin"
+    options = webdriver.ChromeOptions()
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--start-maximized")
+    options.add_argument('--headless')
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    driver = webdriver.Chrome(options=options)
+
+    stealth(driver,
+            languages=["en-US", "en"],
+            vendor="Google Inc.",
+            platform="Win32",
+            webgl_vendor="Intel Inc.",
+            renderer="Intel Iris OpenGL Engine",
+            fix_hairline=True,
+            )
+
+    try:
+        driver.get(url)
+
+        for trade_pair in CoinGeckoTradePair:
+            tp = re.search(r"BTC_(\w+)", trade_pair.value).group(1)
+            # click on class "tw-w-16 tw-text-black tw-cursor-pointer tw-py-1"
+            button = driver.find_element(By.XPATH, "//span[contains(@class, 'tw-w-16') and contains(@class, "
+                                                   "'tw-text-black') and contains(@class, 'tw-cursor-pointer') and "
+                                                   "contains(@class, 'tw-py-1')]")
+            button.click()
+            # get all currency-selector-item class
+            currency = driver.find_elements(By.CLASS_NAME, "currency-selector-item")
+            for i in currency:
+                # get data-iso-code attribute
+                if i.get_attribute("data-iso-code").upper() == tp:
+                    # click on currency
+                    i.click()
+                    # get price
+                    price = driver.find_element(By.CLASS_NAME, "no-wrap").text
+                    pattern = r"[^\d.,]*(\d+[.,]\d+)(?:\s+[A-Za-z]{1,3})?"
+                    price = re.sub(pattern, r"\1", price)
+                    price = re.sub(r"\s+[A-Za-z]{1,3}$", "", price)
+                    # save price to database
+                    save_price(Price(price=price, pair=trade_pair.value, exchange=Exchange.CoinGecko.value,
+                                     timestamp=time.time()))
+
+    except Exception as e:
+        print(e)
+    finally:
+        driver.quit()
+
+
 def main():
     """
     Main function to scrap all exchanges
     """
 
     while True:
+        # start timer to measure execution time
+        print("Starting Blockchain.com")
+        start_time = time.time()
         blockchaincom(BlockchaincomTradePair.BTC_EUR)
         blockchaincom(BlockchaincomTradePair.BTC_USD)
         blockchaincom(BlockchaincomTradePair.BTC_CAD)
@@ -321,18 +429,43 @@ def main():
         blockchaincom(BlockchaincomTradePair.BTC_INR)
         blockchaincom(BlockchaincomTradePair.BTC_BRL)
         blockchaincom(BlockchaincomTradePair.BTC_TRY)
+        # show execution time
+        print("--- %s seconds ---" % (time.time() - start_time))
 
+        # restart timer
+        print("Starting Coinbase Pro")
+        start_time = time.time()
         coin_base_pro(CoinBaseProTradePair.BTC_USD)
         coin_base_pro(CoinBaseProTradePair.BTC_EUR)
         coin_base_pro(CoinBaseProTradePair.BTC_USDT)
         coin_base_pro(CoinBaseProTradePair.BTC_GBP)
+        # show execution time
+        print("--- %s seconds ---" % (time.time() - start_time))
 
+        # restart timer
+        print("Starting Yadio")
+        start_time = time.time()
         yadio()
+        # show execution time
+        print("--- %s seconds ---" % (time.time() - start_time))
 
+        # restart timer
+        print("Starting Binance")
+        start_time = time.time()
         for trade_pair in BinanceTradePair:
             binance(trade_pair)
+        # show execution time
+        print("--- %s seconds ---" % (time.time() - start_time))
 
-        time.sleep(300)
+        # restart timer
+        print("Starting CoinGecko")
+        start_time = time.time()
+        coingecko()
+        # show execution time
+        print("--- %s seconds ---" % (time.time() - start_time))
+
+        # wait 1 minute
+        time.sleep(60)
 
 
 if __name__ == "__main__":
