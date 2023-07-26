@@ -3,14 +3,12 @@ import enum
 import re
 import sqlite3
 import time
-from selenium_stealth import stealth
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium_stealth import stealth
 
 from api.models.price import Price
 
@@ -227,40 +225,45 @@ def yadio():
         driver.quit()
 
 
-def blockchaincom(trade_pair: BlockchaincomTradePair):
+def blockchaincom():
     """
     Scrap blockchain.com to get all bitcoin price in all fiat currencies available
-    :param trade_pair: The trade pair to be searched.
-    :type trade_pair: BlockchaincomTradePair
     """
 
     url = "https://www.blockchain.com/es/explorer/prices"
-    options = webdriver.FirefoxOptions()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--start-maximized")
     options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    driver = webdriver.Firefox(options=options)
-    tp = re.search(r"BTC_(\w+)", trade_pair.value).group(1)
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    driver = webdriver.Chrome(options=options)
+
+    stealth(driver,
+            languages=["en-US", "en"],
+            vendor="Google Inc.",
+            platform="Win32",
+            webgl_vendor="Intel Inc.",
+            renderer="Intel Iris OpenGL Engine",
+            fix_hairline=True,
+            )
 
     try:
         driver.get(url)
 
-        wait = WebDriverWait(driver, 10)
-        select_element = wait.until(ec.presence_of_element_located((By.CLASS_NAME, "sc-7b19e8be-0.eQEwmk")))
+        for trade_pair in BlockchaincomTradePair:
+            tp = re.search(r"BTC_(\w+)", trade_pair.value).group(1)
 
-        select = Select(select_element)
-        select.select_by_value(f'{tp}')
+            button = driver.find_element(By.CSS_SELECTOR, ".sc-7b19e8be-0")
+            select = Select(button)
+            select.select_by_value(f'{tp}')
 
-        time.sleep(1)
-        html = driver.page_source
-        soup = BeautifulSoup(html, 'html.parser')
-        price = soup.find_all("div", class_="sc-89fc2ff1-0 iQXnyB")
-        price = price[0].text
+            price = driver.find_element(By.CLASS_NAME, "sc-89fc2ff1-0.iQXnyB").text
 
-        pattern = r"[^\d.,]*(\d+[.,]\d+)"
-        price = re.sub(pattern, r"\1", price)
-
-        save_price(Price(price=price, pair=trade_pair.value, exchange=Exchange.BLOCKCHAINCOM.value,
-                         timestamp=time.time()))
+            pattern = r"[^\d.,]*(\d+[.,]\d+)"
+            price = re.sub(pattern, r"\1", price)
+            save_price(Price(price=price, pair=trade_pair.value, exchange=Exchange.BLOCKCHAINCOM.value,
+                             timestamp=time.time()))
     except Exception as e:
         print(e)
     finally:
@@ -420,15 +423,7 @@ def main():
         # start timer to measure execution time
         print("Starting Blockchain.com")
         start_time = time.time()
-        blockchaincom(BlockchaincomTradePair.BTC_EUR)
-        blockchaincom(BlockchaincomTradePair.BTC_USD)
-        blockchaincom(BlockchaincomTradePair.BTC_CAD)
-        blockchaincom(BlockchaincomTradePair.BTC_GBP)
-        blockchaincom(BlockchaincomTradePair.BTC_RUB)
-        blockchaincom(BlockchaincomTradePair.BTC_CNY)
-        blockchaincom(BlockchaincomTradePair.BTC_INR)
-        blockchaincom(BlockchaincomTradePair.BTC_BRL)
-        blockchaincom(BlockchaincomTradePair.BTC_TRY)
+        blockchaincom()
         # show execution time
         print("--- %s seconds ---" % (time.time() - start_time))
 
