@@ -1,6 +1,6 @@
 """Main file where the application will be started and the initial paths and configurations will be defined."""
 
-from api.controllers import price_controller
+from api.controllers import routes
 
-app = price_controller.app
+app = routes.app
 
