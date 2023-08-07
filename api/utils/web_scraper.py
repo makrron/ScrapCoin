@@ -4,6 +4,7 @@ import re
 import sqlite3
 import time
 
+import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -39,6 +40,7 @@ class Exchange(enum.Enum):
     """
     Enum class for exchanges.
     """
+    Kraken = "Kraken"
     CoinGecko = "CoinGecko"
     Binance = "Binance"
     BLOCKCHAINCOM = "Blockchain.com"
@@ -141,6 +143,79 @@ class BlockchaincomTradePair(enum.Enum):
     BTC_INR = "BTC_INR"
     BTC_BRL = "BTC_BRL"
     BTC_TRY = "BTC_TRY"
+
+
+class CoinGeckoTradePair(enum.Enum):
+    BTC_USD = "BTC_USD"
+    BTC_IDR = "BTC_IDR"
+    BTC_TWD = "BTC_TWD"
+    BTC_EUR = "BTC_EUR"
+    BTC_KRW = "BTC_KRW"
+    BTC_JPY = "BTC_JPY"
+    BTC_RUB = "BTC_RUB"
+    BTC_CNY = "BTC_CNY"
+    BTC_AED = "BTC_AED"
+    BTC_ARS = "BTC_ARS"
+    BTC_AUD = "BTC_AUD"
+    BTC_BDT = "BTC_BDT"
+    BTC_BHD = "BTC_BHD"
+    BTC_BMD = "BTC_BMD"
+    BTC_BRL = "BTC_BRL"
+    BTC_CAD = "BTC_CAD"
+    BTC_CHF = "BTC_CHF"
+    BTC_CLP = "BTC_CLP"
+    BTC_CZK = "BTC_CZK"
+    BTC_DKK = "BTC_DKK"
+    BTC_GBP = "BTC_GBP"
+    BTC_HKD = "BTC_HKD"
+    BTC_HUF = "BTC_HUF"
+    BTC_ILS = "BTC_ILS"
+    BTC_INR = "BTC_INR"
+    BTC_KWD = "BTC_KWD"
+    BTC_LKR = "BTC_LKR"
+    BTC_MMK = "BTC_MMK"
+    BTC_MXN = "BTC_MXN"
+    BTC_MYR = "BTC_MYR"
+    BTC_NGN = "BTC_NGN"
+    BTC_NOK = "BTC_NOK"
+    BTC_NZD = "BTC_NZD"
+    BTC_PHP = "BTC_PHP"
+    BTC_PKR = "BTC_PKR"
+    BTC_PLN = "BTC_PLN"
+    BTC_SAR = "BTC_SAR"
+    BTC_SEK = "BTC_SEK"
+    BTC_SGD = "BTC_SGD"
+    BTC_THB = "BTC_THB"
+    BTC_TRY = "BTC_TRY"
+    BTC_UAH = "BTC_UAH"
+    BTC_VEF = "BTC_VEF"
+    BTC_VND = "BTC_VND"
+    BTC_ZAR = "BTC_ZAR"
+    BTC_XDR = "BTC_XDR"
+
+
+class BinanceTradePair(enum.Enum):
+    BTC_EUR = "BTC_EUR"
+    BTC_RUB = "BTC_RUB"
+    BTC_NGN = "BTC_NGN"
+    BTC_GBP = "BTC_GBP"
+    BTC_ZAR = "BTC_ZAR"
+    BTC_UAH = "BTC_UAH"
+    BTC_BRL = "BTC_BRL"
+    BTC_TRY = "BTC_TRY"
+    BTC_PLN = "BTC_PLN"
+    BTC_ARS = "BTC_ARS"
+    BTC_RON = "BTC_RON"
+
+
+class KrakenTradePair(enum.Enum):
+    BTC_USD = "XXBTZUSD"
+    BTC_EUR = "XXBTZEUR"
+    BTC_GBP = "XXBTZGBP"
+    BTC_CAD = "XXBTZCAD"
+    BTC_JPY = "XXBTZJPY"
+    BTC_CHF = "XBTCHF"
+    BTC_AUD = "XBTAUD"
 
 
 def coin_base_pro(trade_pair: CoinBaseProTradePair):
@@ -270,20 +345,6 @@ def blockchaincom():
         driver.quit()
 
 
-class BinanceTradePair(enum.Enum):
-    BTC_EUR = "BTC_EUR"
-    BTC_RUB = "BTC_RUB"
-    BTC_NGN = "BTC_NGN"
-    BTC_GBP = "BTC_GBP"
-    BTC_ZAR = "BTC_ZAR"
-    BTC_UAH = "BTC_UAH"
-    BTC_BRL = "BTC_BRL"
-    BTC_TRY = "BTC_TRY"
-    BTC_PLN = "BTC_PLN"
-    BTC_ARS = "BTC_ARS"
-    BTC_RON = "BTC_RON"
-
-
 def binance(trade_pair: BinanceTradePair):
     """
     Scrap binance.com to get all bitcoin price in all fiat currencies available
@@ -309,55 +370,6 @@ def binance(trade_pair: BinanceTradePair):
         print(e)
     finally:
         driver.quit()
-
-
-class CoinGeckoTradePair(enum.Enum):
-    BTC_USD = "BTC_USD"
-    BTC_IDR = "BTC_IDR"
-    BTC_TWD = "BTC_TWD"
-    BTC_EUR = "BTC_EUR"
-    BTC_KRW = "BTC_KRW"
-    BTC_JPY = "BTC_JPY"
-    BTC_RUB = "BTC_RUB"
-    BTC_CNY = "BTC_CNY"
-    BTC_AED = "BTC_AED"
-    BTC_ARS = "BTC_ARS"
-    BTC_AUD = "BTC_AUD"
-    BTC_BDT = "BTC_BDT"
-    BTC_BHD = "BTC_BHD"
-    BTC_BMD = "BTC_BMD"
-    BTC_BRL = "BTC_BRL"
-    BTC_CAD = "BTC_CAD"
-    BTC_CHF = "BTC_CHF"
-    BTC_CLP = "BTC_CLP"
-    BTC_CZK = "BTC_CZK"
-    BTC_DKK = "BTC_DKK"
-    BTC_GBP = "BTC_GBP"
-    BTC_HKD = "BTC_HKD"
-    BTC_HUF = "BTC_HUF"
-    BTC_ILS = "BTC_ILS"
-    BTC_INR = "BTC_INR"
-    BTC_KWD = "BTC_KWD"
-    BTC_LKR = "BTC_LKR"
-    BTC_MMK = "BTC_MMK"
-    BTC_MXN = "BTC_MXN"
-    BTC_MYR = "BTC_MYR"
-    BTC_NGN = "BTC_NGN"
-    BTC_NOK = "BTC_NOK"
-    BTC_NZD = "BTC_NZD"
-    BTC_PHP = "BTC_PHP"
-    BTC_PKR = "BTC_PKR"
-    BTC_PLN = "BTC_PLN"
-    BTC_SAR = "BTC_SAR"
-    BTC_SEK = "BTC_SEK"
-    BTC_SGD = "BTC_SGD"
-    BTC_THB = "BTC_THB"
-    BTC_TRY = "BTC_TRY"
-    BTC_UAH = "BTC_UAH"
-    BTC_VEF = "BTC_VEF"
-    BTC_VND = "BTC_VND"
-    BTC_ZAR = "BTC_ZAR"
-    BTC_XDR = "BTC_XDR"
 
 
 def coingecko():
@@ -414,6 +426,28 @@ def coingecko():
         driver.quit()
 
 
+def kraken(pair: KrakenTradePair):
+    """
+    Scrap kraken.com to get all bitcoin price in all fiat currencies available
+    :param pair: The trade pair to be searched.
+    """
+    # regular expression to delete _ from pair
+    pair = re.sub(r"_", "", pair.value)
+    url = f"https://api.kraken.com/0/public/Ticker?pair={pair}"
+
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            price = data["result"][pair]["c"][0]
+            result = re.search(r'([A-Za-z]{3})$', pair)
+            save_price(Price(price=price, pair="BTC_" + result.group(1), exchange=Exchange.Kraken.value,
+                             timestamp=time.time()))
+
+    except Exception as e:
+        print(e)
+
+
 def main():
     """
     Main function to scrap all exchanges
@@ -423,44 +457,67 @@ def main():
         # start timer to measure execution time
         print("Starting Blockchain.com")
         start_time = time.time()
-        blockchaincom()
+        try:
+            blockchaincom()
+        except Exception as e:
+            print(e)
         # show execution time
         print("--- %s seconds ---" % (time.time() - start_time))
 
         # restart timer
         print("Starting Coinbase Pro")
         start_time = time.time()
-        coin_base_pro(CoinBaseProTradePair.BTC_USD)
-        coin_base_pro(CoinBaseProTradePair.BTC_EUR)
-        coin_base_pro(CoinBaseProTradePair.BTC_USDT)
-        coin_base_pro(CoinBaseProTradePair.BTC_GBP)
+        try:
+            coin_base_pro(CoinBaseProTradePair.BTC_USD)
+            coin_base_pro(CoinBaseProTradePair.BTC_EUR)
+            coin_base_pro(CoinBaseProTradePair.BTC_USDT)
+            coin_base_pro(CoinBaseProTradePair.BTC_GBP)
+        except Exception as e:
+            print(e)
         # show execution time
         print("--- %s seconds ---" % (time.time() - start_time))
 
         # restart timer
         print("Starting Yadio")
         start_time = time.time()
-        yadio()
+        try:
+            yadio()
+        except Exception as e:
+            print(e)
         # show execution time
         print("--- %s seconds ---" % (time.time() - start_time))
 
         # restart timer
         print("Starting Binance")
         start_time = time.time()
-        for trade_pair in BinanceTradePair:
-            binance(trade_pair)
+        try:
+            for trade_pair in BinanceTradePair:
+                binance(trade_pair)
+        except Exception as e:
+            print(e)
         # show execution time
         print("--- %s seconds ---" % (time.time() - start_time))
 
         # restart timer
         print("Starting CoinGecko")
         start_time = time.time()
-        coingecko()
+        try:
+            coingecko()
+        except Exception as e:
+            print(e)
         # show execution time
         print("--- %s seconds ---" % (time.time() - start_time))
 
-        # wait 1 minute
-        time.sleep(60)
+        # restart timer
+        print("Starting Kraken")
+        start_time = time.time()
+        try:
+            for trade_pair in KrakenTradePair:
+                kraken(trade_pair)
+        except Exception as e:
+            print(e)
+        # show execution time
+        print("--- %s seconds ---" % (time.time() - start_time))
 
 
 if __name__ == "__main__":
