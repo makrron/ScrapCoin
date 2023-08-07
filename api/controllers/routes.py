@@ -1,18 +1,10 @@
 """Specific driver for the endpoint that returns Bitcoin prices in fiat."""
+import os
 import sqlite3
 
-from flask import Flask, jsonify, request
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask import jsonify, request, render_template, send_from_directory, redirect
 
-app = Flask(__name__)
-app.config['RATELIMIT_HEADERS_ENABLED'] = True  # To allow the header to be sent
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["100 per day", "50 per hour"],
-    storage_uri="memory://",
-)
+from api import app, limiter
 
 
 def get_db_connection():
@@ -29,10 +21,24 @@ def get_db_connection():
 @app.route('/', methods=['GET'])
 @limiter.exempt
 def home():
-    return jsonify({'message': 'Welcome to the ScrapCoin API!'})
+    """
+    Returns index.html.
+    :return: index.html
+    """
+    return render_template('index.html')
 
 
-@app.route('/prices', methods=['GET'])
+@app.route('/api', methods=['GET'])
+@limiter.exempt
+def api():
+    """
+    Returns redirect to api documentation.
+    :return: Response object with redirect to api documentation.
+    """
+    return redirect('https://scrapcoinpro.gitbook.io/scrapcoin/')
+
+
+@app.route('/api/prices', methods=['GET'])
 @limiter.limit('10 per minute')
 def get_price_list():
     """
@@ -64,7 +70,7 @@ def get_price_list():
             return jsonify({'ERROR': 'Invalid pairs.'}), 400
 
 
-@app.route('/prices/<pair>', methods=['GET'])
+@app.route('/api/prices/<pair>', methods=['GET'])
 @limiter.limit('10 per minute')
 def get_price(pair):
     """
@@ -91,7 +97,7 @@ def get_price(pair):
             return jsonify({'ERROR': 'Invalid pair.'}), 400
 
 
-@app.route('/exchanges/<exchange_name>/prices', methods=['GET'])
+@app.route('/api/exchanges/<exchange_name>/prices', methods=['GET'])
 @limiter.limit('10 per minute')
 def get_exchange_price_list(exchange_name):
     """
@@ -116,7 +122,7 @@ def get_exchange_price_list(exchange_name):
             return jsonify({'ERROR': 'Invalid exchange.'}), 400
 
 
-@app.route('/exchanges', methods=['GET'])
+@app.route('/api/exchanges', methods=['GET'])
 @limiter.limit('10 per minute')
 def get_exchange_list():
     """
@@ -140,7 +146,7 @@ def get_exchange_list():
             return jsonify({'ERROR': 'Invalid exchange.'}), 400
 
 
-@app.route('/exchanges/<exchange_name>/pairs', methods=['GET'])
+@app.route('/api/exchanges/<exchange_name>/pairs', methods=['GET'])
 @limiter.limit('10 per minute')
 def get_exchange_pair_list(exchange_name):
     """
@@ -167,7 +173,7 @@ def get_exchange_pair_list(exchange_name):
             return jsonify({'ERROR': 'Invalid exchange.'}), 400
 
 
-@app.route('/exchanges/<exchange_name>/pairs/<pair>', methods=['GET'])
+@app.route('/api/exchanges/<exchange_name>/pairs/<pair>', methods=['GET'])
 @limiter.limit('10 per minute')
 def get_exchange_pair_price(exchange_name, pair):
     """
@@ -194,3 +200,12 @@ def get_exchange_pair_price(exchange_name, pair):
         except Exception as e:
             print(e)
             return jsonify({'ERROR': 'Invalid exchange or pair.'}), 400
+
+
+@app.route('/favicon.ico')
+def favicon():
+    """
+    Returns the favicon.
+    :return: The favicon.
+    """
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico')

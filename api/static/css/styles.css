@@ -1,0 +1,175 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    scroll-behavior: smooth;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+    animation: fadeIn 1s ease-in-out;
+
+}
+
+header nav {
+    display: flex;
+    justify-content: center;
+}
+
+header nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: color 0.3s ease-in-out;
+    cursor: pointer;
+    position: relative;
+}
+
+header nav a:hover {
+    color: rgba(255, 183, 0, 0.85);
+    transform: scale(1.1);
+}
+
+header nav a:target {
+    transform: scale(1.2);
+}
+
+.hero {
+    background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.wallpapersafari.com%2F51%2F47%2FZTL4iq.jpg&f=1&nofb=1&ipt=b2611fbfe1694e6a4708bda4b489a4dedb29102556d49b79d091d2640b17510a&ipo=images');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    text-align: center;
+    padding: 5rem 0;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    color: #fff;
+    padding: 2rem;
+    text-shadow: 0 0 15px black;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.hero h1 {
+    font-size: 3rem;
+}
+
+.hero p {
+    font-size: 1.5rem;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 2rem;
+    font-weight: bold;
+}
+
+.about {
+    padding: 5rem 0;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.about h2 {
+    font-size: 2.5rem;
+}
+
+.about p {
+    font-size: 1.25rem;
+    margin: 1rem 0;
+}
+
+.features {
+    background-color: #f9f9f9;
+    padding: 5rem 0;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.features h2 {
+    font-size: 2.5rem;
+}
+
+.features ul {
+    padding: 0;
+    margin-top: 0.5rem;
+}
+
+
+.features li {
+    font-size: 1.25rem;
+    margin: 1rem 0;
+}
+
+.contact {
+    background-color: #333;
+    color: #fff;
+    padding: 5rem 0;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+    font-size: 1.25rem;
+}
+
+.contact h2 {
+    font-size: 2.5rem;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+footer p {
+    margin: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+.section {
+    padding: 5rem 0;
+    text-align: center;
+}
+
+.section h2 {
+    font-size: 2.5rem;
+}
+
+.section p {
+    font-size: 1.25rem;
+}
+
+code {
+    display: block;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+pre {
+    white-space: pre-wrap;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
