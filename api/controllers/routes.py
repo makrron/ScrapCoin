@@ -1,21 +1,10 @@
 """Specific driver for the endpoint that returns Bitcoin prices in fiat."""
 import os
-import sqlite3
 
 from flask import jsonify, request, render_template, send_from_directory, redirect
 
+from api.controllers.db import get_db_connection
 from api import app, limiter
-
-
-def get_db_connection():
-    """Connect to the database."""
-    try:
-        conn = sqlite3.connect('api/controllers/database.db')
-        conn.row_factory = sqlite3.Row
-        return conn
-    except Exception as e:
-        print(e)
-        return None
 
 
 @app.route('/', methods=['GET'])

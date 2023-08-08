@@ -16,7 +16,7 @@ from api.models.price import Price
 
 def get_db_connection():
     """Connect to the database."""
-    conn = sqlite3.connect('../controllers/database.db')
+    conn = sqlite3.connect('../../instance/database.db')
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -30,6 +30,7 @@ def save_price(price: Price):
             (str(price.exchange), str(price.pair), str(price.price), price.timestamp)
         )
         conn.commit()
+        conn.close()
         return True
     except Exception as e:
         print(e)
