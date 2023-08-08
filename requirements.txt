@@ -1,6 +1,10 @@
 Flask~=2.3.2
 beautifulsoup4~=4.12.2
-selenium~=4.10.0
+selenium==4.11.2
 Flask-Limiter~=3.3.1
 selenium-stealth~=1.0.6
 webdriver-manager~=4.0.0
+requests~=2.31.0
+bs4~=0.0.1
+click==8.1.6
+waitress~=2.1.2
