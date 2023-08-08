@@ -35,3 +35,10 @@ secrets.yml
 .env
 *.db-journal
 
+.venv/
+
+instance/
+
+.pytest_cache/
+.coverage
+htmlcov/
