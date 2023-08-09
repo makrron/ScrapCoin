@@ -32,7 +32,7 @@ def api():
 def get_price_list():
     """
     Allows you to send a list of trading pairs as query parameters to obtain the prices of several pairs in
-    a single call, e.g. GET /prices?pairs=BTC_USD,BTC_EUR,ETH_USD
+    a single call, e.g. GET /api/prices?pairs=BTC_USD,BTC_EUR,ETH_USD
     :return: JSON object with the current prices of the given trading pairs.
     """
     conn = get_db_connection()
@@ -56,7 +56,7 @@ def get_price_list():
                 return jsonify(rows), 200
         except Exception as e:
             print(e)
-            return jsonify({'ERROR': 'Invalid pairs.'}), 400
+            return jsonify({'ERROR': 'Server Error.'}), 500
 
 
 @app.route('/api/prices/<pair>', methods=['GET'])
@@ -64,7 +64,7 @@ def get_price_list():
 def get_price(pair):
     """
     Returns the current price of a specific trading pair,
-    e.g. GET /prices/BTC_USD to get the current price of Bitcoin in US dollars.
+    e.g. GET /api/prices/BTC_USD to get the current price of Bitcoin in US dollars.
     :param pair: The trading pair to be searched.
     :type pair: str
     :return: JSON object with the current price of the given trading pair.
@@ -83,7 +83,7 @@ def get_price(pair):
                 return jsonify(rows), 200
         except Exception as e:
             print(e)
-            return jsonify({'ERROR': 'Invalid pair.'}), 400
+            return jsonify({'ERROR': 'Server Error.'}), 500
 
 
 @app.route('/api/exchanges/<exchange_name>/prices', methods=['GET'])
@@ -91,7 +91,7 @@ def get_price(pair):
 def get_exchange_price_list(exchange_name):
     """
     Returns the prices of all trading pairs available on a specific exchange,
-    e.g. GET /exchanges/coinbasepro/prices to get the prices available on Coinbase Pro.
+    e.g. GET api/exchanges/coinbasepro/prices to get the prices available on Coinbase Pro.
     :param exchange_name: The name of the exchange.
     :return: JSON object with the current prices of the given exchange.
     """
@@ -108,7 +108,7 @@ def get_exchange_price_list(exchange_name):
                 return jsonify(rows), 200
         except Exception as e:
             print(e)
-            return jsonify({'ERROR': 'Invalid exchange.'}), 400
+            return jsonify({'ERROR': 'Server Error.'}), 500
 
 
 @app.route('/api/exchanges', methods=['GET'])
@@ -132,7 +132,7 @@ def get_exchange_list():
                 return jsonify(rows), 200
         except Exception as e:
             print(e)
-            return jsonify({'ERROR': 'Invalid exchange.'}), 400
+            return jsonify({'ERROR': 'Server Error.'}), 500
 
 
 @app.route('/api/exchanges/<exchange_name>/pairs', methods=['GET'])
@@ -140,7 +140,7 @@ def get_exchange_list():
 def get_exchange_pair_list(exchange_name):
     """
     Returns the list of trading pairs available on a specific exchange,
-    e.g. GET /exchanges/CoinBasePro/pairs to get the trading pairs available on Coinbase Pro.
+    e.g. GET api/exchanges/CoinBasePro/pairs to get the trading pairs available on Coinbase Pro.
     :param exchange_name: The name of the exchange.
     :return: JSON object with the list of trading pairs available on the given exchange.
     """
@@ -159,7 +159,7 @@ def get_exchange_pair_list(exchange_name):
                 return jsonify(rows), 200
         except Exception as e:
             print(e)
-            return jsonify({'ERROR': 'Invalid exchange.'}), 400
+            return jsonify({'ERROR': 'Server Error'}), 500
 
 
 @app.route('/api/exchanges/<exchange_name>/pairs/<pair>', methods=['GET'])
@@ -167,7 +167,7 @@ def get_exchange_pair_list(exchange_name):
 def get_exchange_pair_price(exchange_name, pair):
     """
     Returns the price of a specific trading pair on a specific exchange,
-    e.g. GET /exchanges/CoinBasePro/pairs/BTC_USD to get the price of Bitcoin in US dollars on Coinbase Pro.
+    e.g. GET api/exchanges/CoinBasePro/pairs/BTC_USD to get the price of Bitcoin in US dollars on Coinbase Pro.
     :param exchange_name: The name of the exchange.
     :param pair: The trading pair to be searched.
     :return: JSON object with the price of the given trading pair on the given exchange.
@@ -188,10 +188,11 @@ def get_exchange_pair_price(exchange_name, pair):
                 return jsonify(rows), 200
         except Exception as e:
             print(e)
-            return jsonify({'ERROR': 'Invalid exchange or pair.'}), 400
+            return jsonify({'ERROR': 'Server error.'}), 500
 
 
 @app.route('/favicon.ico')
+@limiter.exempt()
 def favicon():
     """
     Returns the favicon.
