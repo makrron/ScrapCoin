@@ -6,7 +6,6 @@ import re
 import sqlite3
 import time
 
-import chromedriver_autoinstaller
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -353,10 +352,6 @@ def blockchaincom():
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    try:
-        chromedriver_autoinstaller.install()
-    except Exception as e:
-        print(e)
     driver = webdriver.Chrome(options=options)
 
     stealth(driver,
@@ -404,10 +399,6 @@ def binance(trade_pair: BinanceTradePair):
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    try:
-        chromedriver_autoinstaller.install()
-    except Exception as e:
-        print(e)
     driver = webdriver.Chrome(options=options)
 
     try:
@@ -435,12 +426,7 @@ def coingecko():
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    try:
-        chromedriver_autoinstaller.install()
-    except Exception as e:
-        print(e)
     driver = webdriver.Chrome(options=options)
-
     stealth(driver,
             languages=["en-US", "en"],
             vendor="Google Inc.",
