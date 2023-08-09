@@ -1,4 +1,6 @@
 """Module containing functions for web scraping of exchanges."""
+# Path: api/utils/web_scraper.py
+
 import enum
 import re
 import sqlite3
@@ -17,7 +19,7 @@ from api.models.price import Price
 
 def get_db_connection():
     """Connect to the database."""
-    conn = sqlite3.connect('instance/database.db')
+    conn = sqlite3.connect('../../instance/database.db')
     conn.row_factory = sqlite3.Row
     return conn
 
