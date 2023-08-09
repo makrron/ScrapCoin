@@ -4,6 +4,7 @@ import re
 import sqlite3
 import time
 
+import chromedriver_autoinstaller
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -226,14 +227,16 @@ def coin_base_pro(trade_pair: CoinBaseProTradePair):
     :return: Price object with the current price of the given trade pair.
     :rtype: Price
     """
-
     url = "https://pro.coinbase.com/trade/" + trade_pair.value
     # regular expression to change - to _ in trade_pair
     tp = re.sub(r"(\w)-(\w)", r"\1_\2", trade_pair.value)
-    options = webdriver.FirefoxOptions()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--start-maximized")
     options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    driver = webdriver.Firefox(options=options)
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    driver = webdriver.Chrome(options=options)
 
     try:
         driver.get(url)
@@ -261,10 +264,13 @@ def yadio():
     """
 
     url = "https://yadio.io/grid.html"
-    options = webdriver.FirefoxOptions()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--start-maximized")
     options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    driver = webdriver.Firefox(options=options)
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    driver = webdriver.Chrome(options=options)
 
     try:
         driver.get(url)
@@ -305,7 +311,6 @@ def blockchaincom():
     """
     Scrap blockchain.com to get all bitcoin price in all fiat currencies available
     """
-
     url = "https://www.blockchain.com/es/explorer/prices"
     options = webdriver.ChromeOptions()
     options.add_argument("--window-size=1920,1080")
@@ -354,10 +359,13 @@ def binance(trade_pair: BinanceTradePair):
     """
 
     url = f"https://www.binance.com/es/trade/{trade_pair.value}"
-    options = webdriver.FirefoxOptions()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--start-maximized")
     options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    driver = webdriver.Firefox(options=options)
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    driver = webdriver.Chrome(options=options)
 
     try:
         driver.get(url)
@@ -453,6 +461,10 @@ def main():
     """
     Main function to scrap all exchanges
     """
+    try:
+        chromedriver_autoinstaller.install()
+    except Exception as e:
+        print(e)
 
     while True:
         # start timer to measure execution time
