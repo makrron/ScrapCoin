@@ -2,6 +2,7 @@
 # Path: api/utils/web_scraper.py
 
 import enum
+import json
 import re
 import sqlite3
 import time
@@ -13,7 +14,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium_stealth import stealth
-from webdriver_manager.chrome import ChromeDriverManager
+
+with open("../../instance/config.json", "r") as f:
+    config = json.load(f)
 
 
 class Price:
@@ -272,7 +275,7 @@ def coin_base_pro(trade_pair: CoinBaseProTradePair):
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
 
     try:
         driver.get(url)
@@ -306,7 +309,7 @@ def yadio():
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
 
     try:
         driver.get(url)
@@ -354,7 +357,7 @@ def blockchaincom():
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
 
     stealth(driver,
             languages=["en-US", "en"],
@@ -401,7 +404,7 @@ def binance(trade_pair: BinanceTradePair):
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
 
     try:
         driver.get(url)
@@ -428,7 +431,7 @@ def coingecko():
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
     stealth(driver,
             languages=["en-US", "en"],
             vendor="Google Inc.",
