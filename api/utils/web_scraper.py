@@ -353,6 +353,10 @@ def blockchaincom():
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
+    try:
+        chromedriver_autoinstaller.install()
+    except Exception as e:
+        print(e)
     driver = webdriver.Chrome(options=options)
 
     stealth(driver,
@@ -400,6 +404,10 @@ def binance(trade_pair: BinanceTradePair):
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
+    try:
+        chromedriver_autoinstaller.install()
+    except Exception as e:
+        print(e)
     driver = webdriver.Chrome(options=options)
 
     try:
@@ -427,6 +435,10 @@ def coingecko():
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
+    try:
+        chromedriver_autoinstaller.install()
+    except Exception as e:
+        print(e)
     driver = webdriver.Chrome(options=options)
 
     stealth(driver,
@@ -496,10 +508,6 @@ def main():
     """
     Main function to scrap all exchanges
     """
-    try:
-        chromedriver_autoinstaller.install()
-    except Exception as e:
-        print(e)
 
     while True:
         # start timer to measure execution time
