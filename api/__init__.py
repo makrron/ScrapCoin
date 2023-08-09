@@ -10,7 +10,7 @@ from api.controllers import db
 
 def create_app(test_config=None):
     # create and configure the app
-    application = Flask(__name__, instance_relative_config=True)
+    application = Flask(__name__, instance_relative_config=True, template_folder='templates')
     application.config.from_mapping(
         DATABASE="instance/database.db",
     )
