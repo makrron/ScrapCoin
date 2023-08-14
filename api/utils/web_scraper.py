@@ -87,12 +87,12 @@ def create_driver() -> webdriver:
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--start-maximized")
     options.add_argument('--no-sandbox')
+    options.add_argument("--disable-dev-shm-using")
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
 
     if config["CHROME_DRIVER_PATH"] == "":
-        options.add_argument("--disable-dev-shm-using")
         d = webdriver.Chrome(options=options)
     else:  # For Linux server use this
         d = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
