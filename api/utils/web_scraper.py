@@ -77,6 +77,37 @@ def save_price(price: Price):
         return False
 
 
+def create_driver() -> webdriver:
+    """
+    Returns a webdriver object.
+    :return: A webdriver object.
+    :rtype: webdriver
+    """
+    options = webdriver.ChromeOptions()
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--start-maximized")
+    options.add_argument('--no-sandbox')
+    options.add_argument('--headless')
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+
+    if config["CHROME_DRIVER_PATH"] == "":
+        options.add_argument("--disable-dev-shm-using")
+        d = webdriver.Chrome(options=options)
+    else:  # For Linux server use this
+        d = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
+
+    stealth(d,
+            languages=["en-US", "en"],
+            vendor="Google Inc.",
+            platform="Win32",
+            webgl_vendor="Intel Inc.",
+            renderer="Intel Iris OpenGL Engine",
+            fix_hairline=True,
+            )
+    return d
+
+
 class Exchange(enum.Enum):
     """
     Enum class for exchanges.
@@ -269,14 +300,8 @@ def coin_base_pro(trade_pair: CoinBaseProTradePair):
     url = "https://pro.coinbase.com/trade/" + trade_pair.value
     # regular expression to change - to _ in trade_pair
     tp = re.sub(r"(\w)-(\w)", r"\1_\2", trade_pair.value)
-    options = webdriver.ChromeOptions()
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--start-maximized")
-    options.add_argument('--no-sandbox')
-    options.add_argument('--headless')
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
+
+    driver = create_driver()
 
     try:
         driver.get(url)
@@ -304,14 +329,7 @@ def yadio():
     """
 
     url = "https://yadio.io/grid.html"
-    options = webdriver.ChromeOptions()
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--start-maximized")
-    options.add_argument('--no-sandbox')
-    options.add_argument('--headless')
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
+    driver = create_driver()
 
     try:
         driver.get(url)
@@ -352,24 +370,9 @@ def blockchaincom():
     """
     Scrap blockchain.com to get all bitcoin price in all fiat currencies available
     """
+    print(config["CHROME_DRIVER_PATH"])
     url = "https://www.blockchain.com/es/explorer/prices"
-    options = webdriver.ChromeOptions()
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--start-maximized")
-    options.add_argument('--no-sandbox')
-    options.add_argument('--headless')
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
-
-    stealth(driver,
-            languages=["en-US", "en"],
-            vendor="Google Inc.",
-            platform="Win32",
-            webgl_vendor="Intel Inc.",
-            renderer="Intel Iris OpenGL Engine",
-            fix_hairline=True,
-            )
+    driver = create_driver()
 
     try:
         driver.get(url)
@@ -401,14 +404,7 @@ def binance(trade_pair: BinanceTradePair):
     """
 
     url = f"https://www.binance.com/es/trade/{trade_pair.value}"
-    options = webdriver.ChromeOptions()
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--start-maximized")
-    options.add_argument('--no-sandbox')
-    options.add_argument('--headless')
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
+    driver = create_driver()
 
     try:
         driver.get(url)
@@ -429,22 +425,7 @@ def coingecko():
     Scrap coingecko.com to get all bitcoin price in all fiat currencies available
     """
     url = "https://www.coingecko.com/en/coins/bitcoin"
-    options = webdriver.ChromeOptions()
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--start-maximized")
-    options.add_argument('--no-sandbox')
-    options.add_argument('--headless')
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    driver = webdriver.Chrome(options=options, service=Service(executable_path=config["CHROME_DRIVER_PATH"]))
-    stealth(driver,
-            languages=["en-US", "en"],
-            vendor="Google Inc.",
-            platform="Win32",
-            webgl_vendor="Intel Inc.",
-            renderer="Intel Iris OpenGL Engine",
-            fix_hairline=True,
-            )
+    driver = create_driver()
 
     try:
         driver.get(url)
