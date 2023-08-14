@@ -15,8 +15,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium_stealth import stealth
 
-with open("../../instance/config.json", "r") as f:
-    config = json.load(f)
+try:  # For local development
+    with open("../../instance/config.json", "r") as f:
+        config = json.load(f)
+except FileNotFoundError:  # For production
+    with open("instance/config.json", "r") as f:
+        config = json.load(f)
 
 
 class Price:
