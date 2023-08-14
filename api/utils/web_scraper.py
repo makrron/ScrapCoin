@@ -370,7 +370,6 @@ def blockchaincom():
     """
     Scrap blockchain.com to get all bitcoin price in all fiat currencies available
     """
-    print(config["CHROME_DRIVER_PATH"])
     url = "https://www.blockchain.com/es/explorer/prices"
     driver = create_driver()
 
