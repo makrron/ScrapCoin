@@ -18,7 +18,7 @@ from selenium_stealth import stealth
 try:  # For local development
     with open("../../instance/config.json", "r") as f:
         config = json.load(f)
-except FileNotFoundError:  # For production
+except Exception:  # For production
     with open("instance/config.json", "r") as f:
         config = json.load(f)
 
@@ -60,7 +60,7 @@ class Price:
 
 def get_db_connection():
     """Connect to the database."""
-    conn = sqlite3.connect('../../instance/database.db')
+    conn = sqlite3.connect(config["DATABASE"])
     conn.row_factory = sqlite3.Row
     return conn
 
