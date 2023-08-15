@@ -273,6 +273,7 @@ class CoinGeckoTradePair(enum.Enum):
 
 
 class BinanceTradePair(enum.Enum):
+    BTC_USDT = "BTC_USDT"
     BTC_EUR = "BTC_EUR"
     BTC_RUB = "BTC_RUB"
     BTC_NGN = "BTC_NGN"
@@ -284,6 +285,7 @@ class BinanceTradePair(enum.Enum):
     BTC_PLN = "BTC_PLN"
     BTC_ARS = "BTC_ARS"
     BTC_RON = "BTC_RON"
+    BTC_AUD = "BTC_AUD"
 
 
 class KrakenTradePair(enum.Enum):
@@ -311,7 +313,7 @@ def coin_base_pro(trade_pair: CoinBaseProTradePair):
 
     try:
         driver.get(url)
-        time.sleep(5)  # Wait until the page is fully loaded
+        time.sleep(10)  # Wait until the page is fully loaded
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
         price = soup.find("div", {"class": "Flex-sc-1x8cw8c-0 MarketInfo__Section-sc-1acyfpz-3 irrwlQ"}).find("span", {
@@ -381,8 +383,9 @@ def blockchaincom():
 
     try:
         driver.get(url)
-
+        time.sleep(3)  # Wait until the page is fully loaded
         for trade_pair in BlockchaincomTradePair:
+            time.sleep(1)  # wait until the page is fully loaded
             tp = re.search(r"BTC_(\w+)", trade_pair.value).group(1)
 
             button = driver.find_element(By.CSS_SELECTOR, ".sc-7b19e8be-0")
@@ -423,6 +426,23 @@ def binance(trade_pair: BinanceTradePair):
         print(e)
     finally:
         driver.quit()
+
+
+def binance_api(trade_pair: BinanceTradePair):
+    # remove _ from trade_pair
+    t = trade_pair.value.replace("_", "")
+    try:
+        url = f"https://api.binance.com/api/v3/ticker/price?symbol={t}"
+        response = requests.get(url)
+        price = response.json()["price"]
+        # reformat price to put the , and . in the right place
+        parts = price.split('.')
+        price = re.sub(r'(\d)(?=(\d{3})+(?!\d))', r'\1,', parts[0])
+        price = price + "." + parts[1]
+        save_price(Price(price=price, pair=trade_pair.value, exchange=Exchange.Binance.value,
+                         timestamp=time.time()))
+    except Exception as e:
+        print(e)
 
 
 def coingecko():
@@ -530,7 +550,7 @@ def main():
         start_time = time.time()
         try:
             for trade_pair in BinanceTradePair:
-                binance(trade_pair)
+                binance_api(trade_pair)
         except Exception as e:
             print(e)
         # show execution time
