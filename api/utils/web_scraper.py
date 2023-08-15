@@ -302,8 +302,6 @@ def coin_base_pro(trade_pair: CoinBaseProTradePair):
     """Returns the current price of a given trade pair on Coinbase Pro.
     :param trade_pair: The trade pair to be searched.
     :type trade_pair: CoinBaseProTradePair
-    :return: Price object with the current price of the given trade pair.
-    :rtype: Price
     """
     url = "https://pro.coinbase.com/trade/" + trade_pair.value
     # regular expression to change - to _ in trade_pair
@@ -383,7 +381,6 @@ def blockchaincom():
 
     try:
         driver.get(url)
-        time.sleep(3)  # Wait until the page is fully loaded
         for trade_pair in BlockchaincomTradePair:
             time.sleep(1)  # wait until the page is fully loaded
             tp = re.search(r"BTC_(\w+)", trade_pair.value).group(1)
@@ -513,29 +510,6 @@ def main():
 
     while True:
         # start timer to measure execution time
-        print("Starting Blockchain.com")
-        start_time = time.time()
-        try:
-            blockchaincom()
-        except Exception as e:
-            print(e)
-        # show execution time
-        print("--- %s seconds ---" % (time.time() - start_time))
-
-        # restart timer
-        print("Starting Coinbase Pro")
-        start_time = time.time()
-        try:
-            coin_base_pro(CoinBaseProTradePair.BTC_USD)
-            coin_base_pro(CoinBaseProTradePair.BTC_EUR)
-            coin_base_pro(CoinBaseProTradePair.BTC_USDT)
-            coin_base_pro(CoinBaseProTradePair.BTC_GBP)
-        except Exception as e:
-            print(e)
-        # show execution time
-        print("--- %s seconds ---" % (time.time() - start_time))
-
-        # restart timer
         print("Starting Yadio")
         start_time = time.time()
         try:
@@ -557,6 +531,17 @@ def main():
         print("--- %s seconds ---" % (time.time() - start_time))
 
         # restart timer
+        print("Starting Kraken")
+        start_time = time.time()
+        try:
+            for trade_pair in KrakenTradePair:
+                kraken(trade_pair)
+        except Exception as e:
+            print(e)
+        # show execution time
+        print("--- %s seconds ---" % (time.time() - start_time))
+
+        # restart timer
         print("Starting CoinGecko")
         start_time = time.time()
         try:
@@ -567,11 +552,23 @@ def main():
         print("--- %s seconds ---" % (time.time() - start_time))
 
         # restart timer
-        print("Starting Kraken")
+        print("Starting Coinbase Pro")
         start_time = time.time()
         try:
-            for trade_pair in KrakenTradePair:
-                kraken(trade_pair)
+            coin_base_pro(CoinBaseProTradePair.BTC_USD)
+            coin_base_pro(CoinBaseProTradePair.BTC_EUR)
+            coin_base_pro(CoinBaseProTradePair.BTC_USDT)
+            coin_base_pro(CoinBaseProTradePair.BTC_GBP)
+        except Exception as e:
+            print(e)
+        # show execution time
+        print("--- %s seconds ---" % (time.time() - start_time))
+
+        # restart timer
+        print("Starting Blockchain.com")
+        start_time = time.time()
+        try:
+            blockchaincom()
         except Exception as e:
             print(e)
         # show execution time
