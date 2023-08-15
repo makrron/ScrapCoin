@@ -173,3 +173,12 @@ pre {
     margin: 1rem 0;
 }
 
+.copyright {
+    margin-bottom: 10px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
