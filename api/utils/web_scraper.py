@@ -95,6 +95,11 @@ def create_driver() -> webdriver:
     options.add_argument("--remote-debugging-port=9222")
     options.add_argument("--disable-setuid-sandbox")
     options.add_argument('--headless')
+    options.add_argument("enable-features=NetworkServiceInProcess")
+    options.add_argument("disable-features=NetworkService")
+    options.add_argument("--ignore-certificate-errors")
+    options.add_argument("--ignore-ssl-errors")
+    options.add_argument("--force-device-scale-factor=1")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
 
