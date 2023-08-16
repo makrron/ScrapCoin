@@ -4,24 +4,52 @@ body {
     scroll-behavior: smooth;
 }
 
+@media (max-width: 767px) {
+    header {
+        padding: 0.5rem;
+    }
+
+    header nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    header nav a {
+        margin: 0.5rem 0;
+        font-size: 1.2rem;
+    }
+}
+
+@media (min-width: 768px) {
+    header {
+        padding: 1rem;
+    }
+
+    header nav {
+        justify-content: center;
+    }
+
+    header nav a {
+        margin: 0 1rem;
+        font-size: 1rem;
+    }
+}
+
 header {
     background-color: #333;
     color: #fff;
-    padding: 1rem;
     animation: fadeIn 1s ease-in-out;
-
 }
 
 header nav {
     display: flex;
-    justify-content: center;
+    transition: justify-content 0.3s ease-in-out;
 }
 
 header nav a {
-    color: #fff;
+    color: rgb(255, 255, 255);
     text-decoration: none;
-    margin: 0 1rem;
-    transition: color 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
     cursor: pointer;
     position: relative;
 }
@@ -62,18 +90,8 @@ header nav a:target {
     font-size: 1.5rem;
 }
 
-.btn {
-    display: inline-block;
-    background-color: #007bff;
-    color: #fff;
-    padding: 1rem 2rem;
-    text-decoration: none;
-    border-radius: 5px;
-    margin-top: 2rem;
-    font-weight: bold;
-}
-
 .about {
+    background-color: #e0e0e0;
     padding: 5rem 0;
     text-align: center;
     animation: fadeIn 1s ease-in-out;
@@ -89,7 +107,7 @@ header nav a:target {
 }
 
 .features {
-    background-color: #f9f9f9;
+    background-color: #969696;
     padding: 5rem 0;
     text-align: center;
     animation: fadeIn 1s ease-in-out;
@@ -111,7 +129,7 @@ header nav a:target {
 }
 
 .contact {
-    background-color: #333;
+    background-color: #484848;
     color: #fff;
     padding: 5rem 0;
     text-align: center;
@@ -124,8 +142,8 @@ header nav a:target {
 }
 
 footer {
-    background-color: #333;
-    color: #fff;
+    background-color: rgba(138, 93, 8, 0.85);
+    color: #000000;
     padding: 1rem;
     text-align: center;
     animation: fadeIn 1s ease-in-out;
@@ -133,6 +151,29 @@ footer {
 
 footer p {
     margin: 0;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.social-icons a {
+    display: inline-block;
+    margin: 0 0.25rem;
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+
+.social-icons a:hover {
+    color: rgba(255, 183, 0, 0.85);
+}
+
+.social-icons img {
+    width: 24px;
+    height: 24px;
 }
 
 @keyframes fadeIn {
@@ -173,12 +214,34 @@ pre {
     margin: 1rem 0;
 }
 
-.copyright {
-    margin-bottom: 10px;
-}
-
 .social-icons {
     display: flex;
     gap: 10px;
     justify-content: center;
+}
+
+
+/*BUTTON*/
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.btn:hover {
+    background-color: rgba(255, 183, 0, 0.85);
+    transform: scale(1.05);
+}
+
+.btn:active {
+    background-color: rgba(255, 183, 0, 0.85);
+    transform: scale(0.95);
 }
