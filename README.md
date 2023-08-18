@@ -7,9 +7,8 @@ ScrapCoin Pro is a Rest API developed in Python that allows querying Bitcoin fia
 ## Features
 
 - Query updated Bitcoin prices in fiat for different trading pairs.
-- Support for multiple popular exchanges through web scraping.
-- Guaranteed privacy and anonymity, no user data storage.
-- Private access through the TOR network.
+- Support for multiple popular exchanges through web scraping and API requests.
+- Guaranteed privacy and anonymity, no user data storage.- Private access through the TOR network.
 - Periodic price updates to provide reliable data in real time.
 - Easy integration with your application
 
