@@ -1,4 +1,5 @@
 **This project is under development and is not ready for use.**
+**BETA USE: http://xz5jnu633vplnrea7syblslmznxmubmobiqgp4zbeqfpbk5vckie2cid.onion/**
 
 
 # ScrapCoin Pro API
